@@ -117,46 +117,35 @@ let createNewUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             let check = await checkUserEmail(data.email);
-            if (check) {
+            if (check === true) {
                 resolve({
                     errCode: 1,
-                    message: 'Your email is already in use. Please try another email!'
-                });
-                return; // Exit function early if email is already in use
+                    errMessage: 'Your email is already in use. Please try another email!'
+                })
+            }else{
+                    let hashPasswordFromBcrypt = await hashUserPassword(data.password);
+                    await db.User.create({
+                        email: data.email,
+                        password: hashPasswordFromBcrypt,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        address: data.address,
+                        phonenumber: data.phonenumber,
+                        gender: data.gender === '1' ? true : false,
+                        image: data.image,
+                        roleId: data.roleId,
+                    })
+                    resolve({
+                        errCode: 0,
+                        message: 'User creation succeeded!'
+                    })
+                }
+            } catch (error) {
+                reject(error);
             }
-
-            console.log('Data received:', data);
-
-            // Ensure data.inputPassword4 is defined and not empty
-            if (!data.password || typeof data.password !== 'string') {
-                throw new Error('Invalid password');
-            }
-
-            let hashPasswordFromBcrypt = await hashUserPassword(data.password);
-
-            await db.User.create({
-                email: data.email,
-                password: hashPasswordFromBcrypt,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address,
-                phonenumber: data.phonenumber,
-                gender: data.gender === '1' ? true : false,
-                image: data.image,
-                roleId: data.roleId,
-            });
-
-            resolve({
-                errCode: 0,
-                message: 'User creation succeeded!'
-            });
-        } catch (error) {
-            console.error('Error occurred while creating user:', error);
-            reject(error);
+            })
         }
-    });
-};
-
+            
 let deleteUser = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
