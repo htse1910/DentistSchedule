@@ -8,7 +8,7 @@ let createNewUser = async (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             console.log('Data received:', data);  // Kiểm tra dữ liệu nhận được
-            let hashPasswordFromBcrypt = await hashUserPassword(data.inputPassword4); // Sử dụng đúng tên trường
+            let hashPasswordFromBcrypt = await hashUserPassword(data.inputPassword); // Sử dụng đúng tên trường
             await db.User.create({
                 email: data.email,
                 password: hashPasswordFromBcrypt,
@@ -71,28 +71,6 @@ let getUserInfoById = (userId) => {
 }
 
 let updateUserData = (data) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let user = await db.User.findOne({
-                where: { id: data.id }
-            })
-            if (user) {
-                user.firstName = data.firstName;
-                user.lastName = data.lastName;
-                user.address = data.address;
-
-                await user.save();
-                let allUsers = await db.User.findAll();
-                resolve(allUsers);
-            } else {
-                resolve();
-            }
-
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    );
 }
 
 let deleteUserById = (userId) => {
