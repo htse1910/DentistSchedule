@@ -3,12 +3,12 @@ import bodyParser from "body-parser";
 import configViewEngine from "./config/viewEngine";
 import initWebRoutes from './route/web';
 import connectDB from './config/connectDB';
-import cors from 'cors'
+import cors from 'cors';
 
 require('dotenv').config();
 
 let app = express();
-app.use(cors({credentials: true, origin: true}))
+app.use(cors({ credentials: true, origin: true }))
 
 // Cấu hình body-parser middleware
 app.use(bodyParser.json());
