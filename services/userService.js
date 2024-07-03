@@ -33,7 +33,7 @@ let handleUserLogin = (email, password) => {
 
                 if (user) {
                     //compare password
-                    let check = await bcrypt.compareSync(password, user.password);
+                    let check = bcrypt.compareSync(password, user.password);
                     if (check) {
                         userData.errCode = 0;
                         userData.errMessage = 'ok';
@@ -122,30 +122,30 @@ let createNewUser = (data) => {
                     errCode: 1,
                     errMessage: 'Your email is already in use. Please try another email!'
                 })
-            }else{
-                    let hashPasswordFromBcrypt = await hashUserPassword(data.password);
-                    await db.User.create({
-                        email: data.email,
-                        password: hashPasswordFromBcrypt,
-                        firstName: data.firstName,
-                        lastName: data.lastName,
-                        address: data.address,
-                        phonenumber: data.phonenumber,
-                        gender: data.gender === '1' ? true : false,
-                        image: data.image,
-                        roleId: data.roleId,
-                    })
-                    resolve({
-                        errCode: 0,
-                        message: 'User creation succeeded!'
-                    })
-                }
-            } catch (error) {
-                reject(error);
+            } else {
+                let hashPasswordFromBcrypt = await hashUserPassword(data.password);
+                await db.User.create({
+                    email: data.email,
+                    password: hashPasswordFromBcrypt,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                    phonenumber: data.phoneNumber,
+                    gender: data.gender,
+                    roleId: data.role,
+                    positionId: data.position
+                })
+                resolve({
+                    errCode: 0,
+                    message: 'User creation succeeded!'
+                })
             }
-            })
+        } catch (error) {
+            reject(error);
         }
-            
+    })
+}
+
 let deleteUser = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -214,22 +214,22 @@ let updateUserData = (data) => {
 };
 
 let getAllCodeService = (typeInput) => {
-    return new Promise(async (resolve, reject)=>{
-        try{
-            if(!typeInput) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!typeInput) {
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing required parameters!'
                 })
-        } else {
-            let res = {};
-            let allcode = await db.Allcode.findAll({
-                where: { type: typeInput }
-            });
-            res.errCode = 0;
-            res.data = allcode;
-            resolve(res);
-        }
+            } else {
+                let res = {};
+                let allcode = await db.Allcode.findAll({
+                    where: { type: typeInput }
+                });
+                res.errCode = 0;
+                res.data = allcode;
+                resolve(res);
+            }
         } catch (e) {
             reject(e);
         }
