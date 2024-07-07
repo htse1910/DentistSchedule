@@ -20,7 +20,7 @@ let getTopDoctorHome = (limitInput) => {
 
 
             resolve({
-                errcode: 0,
+                errCode: 0,
                 data: users
             })
         } catch (e) {
